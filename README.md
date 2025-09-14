@@ -1,82 +1,149 @@
-# ByteClassAPI
-ByteClassAPI é uma API para gerenciamento de cursos online, desenvolvida em Node.js, com suporte a Docker e banco de dados estruturado. O projeto inclui documentação completa para facilitar entendimento e integração. Inspirado no curso Primeira API da Rocketseat.
+# ByteClass API
 
-Requisitos
-Node.js 22+
-Docker e Docker Compose
-npm (ou outro gerenciador, mas o projeto usa package-lock.json)
-Tecnologias
-Fastify 5
-TypeScript
-Drizzle ORM + PostgreSQL
-Zod (validação)
-Referência de API Swagger/OpenAPI + Escalar (em /docsquando NODE_ENV=development)
-Configuração
-Clone o repositório e acesse a pasta do projeto.
-Instalar as dependências:
-npm install
-No banco Postgres com Docker:
-docker compose up -d
-Crie um arquivo .envna raiz com:
-# URL do banco (Docker local padrão)
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/byteclassapi
+Uma API simples e robusta para gerenciamento de cursos, desenvolvida com tecnologias modernas do ecossistema Node.js e TypeScript. Este projeto foi inspirado pelo curso **Primeira API da Rocketseat** e serve como uma base sólida para a criação de aplicações web escaláveis.
 
-# Ativa docs em /docs
-NODE_ENV=development
-Rode as migrações:
-npm run db:migrate
-(opcional) Para funcionar o esquema/estado com o Drizzle Studio:
+<div align="center">
 
-npm run db:studio
-Executando ou servidor
+![Badge em desenvolvimento](https://img.shields.io/badge/status-em%20desenvolvimento-blue)
+![Tecnologias](https://img.shields.io/badge/tecnologias-Node.js%20|%20TypeScript%20|%20Fastify-informational)
+![Licença](https://img.shields.io/badge/licença-ISC-success)
+
+</div>
+
+---
+
+## 🚀 Tecnologias
+
+O projeto foi construído utilizando as seguintes tecnologias:
+
+* **Node.js**: Ambiente de execução JavaScript.
+* **TypeScript**: Superconjunto tipado do JavaScript.
+* **Fastify**: Framework web de alta performance.
+* **Drizzle ORM**: ORM leve para interação com o banco de dados.
+* **PostgreSQL**: Sistema de gerenciamento de banco de dados.
+* **Zod**: Biblioteca para validação de esquemas.
+* **Swagger/OpenAPI + Scalar**: Ferramentas para documentação de API, acessíveis via `/docs` em ambiente de desenvolvimento.
+
+---
+
+## ⚙️ Requisitos
+
+Certifique-se de que os seguintes requisitos estão instalados em sua máquina:
+
+* **Node.js** (versão 22 ou superior)
+* **Docker** e **Docker Compose**
+* **npm** (ou outro gerenciador de pacotes, o projeto usa `package-lock.json`)
+
+---
+
+## ⚙️ Configuração do Ambiente
+
+Siga os passos abaixo para rodar a aplicação localmente:
+
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/VagnerCrestanni/ByteClassAPI.git](https://github.com/VagnerCrestanni/ByteClassAPI.git)
+    cd ByteClassAPI
+    ```
+
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+
+3.  **Inicie o banco de dados com Docker Compose:**
+    ```bash
+    docker compose up -d
+    ```
+
+4.  **Crie o arquivo de variáveis de ambiente:**
+    Na raiz do projeto, crie um arquivo chamado `.env` com o seguinte conteúdo:
+    ```bash
+    DATABASE_URL="postgresql://postgres:postgres@localhost:5432/byteclassapi"
+    # Ativa a documentação da API em ambiente de desenvolvimento
+    NODE_ENV="development"
+    ```
+
+5.  **Rode as migrações (opcional):**
+    Para aplicar o esquema do banco de dados, execute:
+    ```bash
+    npm run db:migrate
+    ```
+
+6.  **Gerencie o banco de dados (opcional):**
+    Para visualizar e interagir com o banco de dados através de uma interface web, use o Drizzle Studio:
+    ```bash
+    npm run db:studio
+    ```
+
+---
+
+## ▶️ Executando a API
+
+Para iniciar o servidor, execute o seguinte comando:
+
+```bash
 npm run dev
-Porta padrão:http://localhost:3333
-Logs legíveis habilitados
-Documentação da API (em dev):http://localhost:3333/docs
-Pontos finais
-URL base:http://localhost:3333
+O servidor estará disponível em: http://localhost:3333
 
-PUBLICAR/courses
+Logs legíveis estão habilitados no terminal.
 
-Cria um curso
-Corpo (JSON):
+A documentação da API está acessível em: http://localhost:3333/docs (apenas em ambiente de desenvolvimento).
+
+🗺️ Rotas da API
+A URL base para todas as rotas é: http://localhost:3333
+
+Método	Endpoint	Descrição
+POST	/courses	Cria um novo curso.
+GET	/courses	Lista todos os cursos.
+GET	/courses/:id	Busca um curso específico pelo ID.
+
+Exportar para as Planilhas
+Exemplos de requisições:
+
+POST /courses
+
+JSON
+
 { "title": "Curso de Docker" }
-Respostas:
-201:{ "courseId": "<uuid>" }
-PEGAR/courses
+Resposta 201: {"courseId": ""}
 
-Lista de todos os cursos
-200:{ "courses": [{ "id": "<uuid>", "title": "..." }] }
-PEGAR/courses/:id
+GET /courses
+Resposta 200: {"courses": [{ "id": "", "title": "..." }], "total": 1}
 
-Buscar um curso pelo ID
-Parâmetros: id(UUID)
-Respostas:
-200:{ "course": { "id": "<uuid>", "title": "...", "description": "... | null" } }
-404: vazio
-Há um arquivo requisicoes.httpcom exemplos prontos (compatível com extensões de REST Client).
+GET /courses/:id
+Parâmetros: id (UUID)
+Resposta 200: {"course": { "id": "", "title": "...", "description": "... | null" }}
+Resposta 404: (vazio)
 
-Modelos (esquema)
-Tabelas principais definidas em src/database/schema.ts:
+📘 Modelos (Schema)
+As tabelas principais do banco de dados são definidas em src/database/schema.ts:
 
 courses
-id(uuid, pk, padrão aleatório)
-title(texto, único, obrigatório)
-description(texto, opcional)
-users(exemplo para estudos)
-id(uuid, pk, padrão aleatório)
-name(texto, obrigatório)
-email(texto, único, obrigatório)
-Fluxo principal (Sereia)
 
-Roteiros
-npm run dev: inicia o servidor com recarga e carrega variáveis ​​de.env
-npm run db:generate: gera artistas do Drizzle a partir do esquema
-npm run db:migrate: aplica migrações no banco
-npm run db:studio: abre o Drizzle Studio
-Dicas e soluções de problemas
-Conexão recusada ao Postgres: confirme docker compose up -de que a porta 5432não está em uso.
-Variável DATABASE_URLausente: verifique seu .env. O Chuvisco exige essa variável para db:generate, db:migratee db:studio.
-Docs não aparecem em /docs: garanta NODE_ENV=developmentno .enve reinicie o servidor.
-Licença
-ISC (ver package.json).
+id: uuid, chave primária.
+
+title: text, único e obrigatório.
+
+description: text, opcional.
+
+users
+
+id: uuid, chave primária.
+
+name: text, obrigatório.
+
+email: text, único e obrigatório.
+
+🤝 Fluxo Principal
+O projeto segue um fluxo de trabalho assíncrono.
+
+⚠️ Dicas e Soluções de Problemas
+Conexão recusada ao PostgreSQL: Verifique se o Docker está em execução e se a porta 5432 não está sendo usada por outro processo.
+
+Variável DATABASE_URL ausente: O Drizzle Kit exige essa variável para os comandos db:generate, db:migrate e db:studio. Certifique-se de que o arquivo .env foi criado corretamente.
+
+Docs não aparece em /docs: Garanta que NODE_ENV=development está definido no seu .env e reinicie o servidor.
+
+📄 Licença
+Este projeto está licenciado sob a licença ISC.
