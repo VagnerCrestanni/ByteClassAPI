@@ -1,31 +1,64 @@
-import { FastifyPluginAsyncZod } from "fastify-type-provider-zod"
-import { db } from "../database/clients.ts"
-import { courses } from "../database/schema.ts"
-import { z } from "zod"
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
+import { db } from '../database/client'
+import { courses, enrollments } from '../database/schema' 
+import { ilike, asc, type SQL, and, eq, count } from 'drizzle-orm'
+import z from 'zod'
+import { checkUserRole } from './hooks/check-user-role' 
+import { checkRequestJWT } from './hooks/check-request-jwt'
 
+export const getCoursesRoute: FastifyPluginAsyncZod = async (server) => {
+  server.get('/courses', {
+    schema: {
+      preHandler: [
+        checkRequestJWT,
+        checkUserRole('manager'),
+      ],
+      tags: ['courses'],
+      summary: 'Get all courses',
+      querystring: z.object({
+        search: z.string().optional(),
+        orderBy: z.enum(['id', 'title']).optional().default('id'),
+        page: z.coerce.number().optional().default(1),
+      }),
+      response: {
+        200: z.object({
+          courses: z.array(
+            z.object({
+              id: z.uuid(),
+              title: z.string(),
+              enrollments: z.number(),
+            })
+          ),
+          total: z.number(),
+        })
+      }
+    }
+  }, async (request, reply) => {
+    const { search, orderBy, page } = request.query
 
-export const getCoursesRoute: FastifyPluginAsyncZod = async (server) =>{
-    server.get('/courses', { 
-        schema: {
-            tags: ['courses'],
-            summary: 'Get all courses',
-            response: {
-                200: z.object({ 
-                courses: z.array( 
-                  z.object({
-                    id: z.uuid(),
-                    title: z.string(),
-                  })
-               )
-             })
-         }
-        }
-     }, async (request, reply) => {
-        const result = await db.select({
-            id: courses.id,
-            title: courses.title,
-        }).from(courses)
-    
-        return reply.send({courses: result })
-    })
+    const conditions: SQL[] = []
+
+    if (search) {
+      conditions.push(ilike(courses.title, `%${search}%`))
+    }
+
+    const [result, total] = await Promise.all([
+      db
+        .select({
+          id: courses.id,
+          title: courses.title,
+          enrollments: count(enrollments.id),
+        })
+        .from(courses)
+        .leftJoin(enrollments, eq(enrollments.courseId, courses.id))
+        .orderBy(asc(courses[orderBy]))
+        .offset((page - 1) * 2)
+        .limit(10)
+        .where(and(...conditions))
+        .groupBy(courses.id),
+      db.$count(courses, and(...conditions))
+    ])
+
+    return reply.send({ courses: result, total })
+  })
 }

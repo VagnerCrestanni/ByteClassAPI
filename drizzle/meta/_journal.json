@@ -15,6 +15,34 @@
       "when": 1755458985782,
       "tag": "0001_fine_black_widow",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757548050977,
+      "tag": "0002_slippery_cardiac",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1757548225496,
+      "tag": "0003_melted_marten_broadcloak",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1757550961023,
+      "tag": "0004_awesome_reptil",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1757551839134,
+      "tag": "0005_next_stepford_cuckoos",
+      "breakpoints": true
     }
   ]
 }

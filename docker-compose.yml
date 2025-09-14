@@ -7,3 +7,5 @@ services:
       POSTGRES_DB: byteclassapi
     ports:
       - "5432:5432"
+    volumes:
+      -./docker/setup.sql:/docker-entrypoint-initdb.d/init.sql
